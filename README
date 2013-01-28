@@ -1,0 +1,5 @@
+/* Authors: Kiran Vodrahalli, Alex Yu, Yicheng Sun, Andrew Ng
+ * GroupMeetup -- GoogleMaps for iOS version
+ * January 28, 2013 */
+
+Uses GoogleMaps iOS to do all GPS/Map stuff. Requires the product key still. 
