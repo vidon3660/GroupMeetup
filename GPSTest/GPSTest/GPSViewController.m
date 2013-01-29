@@ -20,10 +20,25 @@
 
 @synthesize mapView = _mapView;
 @synthesize delegate = _delegate;
+- (IBAction)StdButton:(UIBarButtonItem *)sender {
+    self.mapView.mapType = MKMapTypeStandard;
+}
+- (IBAction)SatButton:(UIBarButtonItem *)sender {
+    self.mapView.mapType = MKMapTypeSatellite;
+
+}
+
+- (IBAction)HybdButton:(UIBarButtonItem *)sender {
+    self.mapView.mapType = MKMapTypeHybrid;
+
+}
+
+
 
 -(void)updateMapViewAt:(CLLocationCoordinate2D)coord {
     
     [self.mapView setCenterCoordinate:coord animated:TRUE];
+    
     
 }
 - (IBAction)refreshButton:(UIBarButtonItem *)sender {
