@@ -33,6 +33,7 @@
     return self;
 }
 
+/* comment addition here: Jan 30, 1:25 AM */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
     int i = 0;
     for(CLLocation* loc in locations){
