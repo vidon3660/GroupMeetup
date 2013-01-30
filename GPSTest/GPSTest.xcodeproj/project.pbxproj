@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		535CF77016B8B66800EC6F84 /* PersonLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 535CF76F16B8B66800EC6F84 /* PersonLocation.m */; };
 		9FD80DC616B7642B00B87363 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD80DC516B7642B00B87363 /* UIKit.framework */; };
 		9FD80DC816B7642B00B87363 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD80DC716B7642B00B87363 /* Foundation.framework */; };
 		9FD80DCA16B7642B00B87363 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD80DC916B7642B00B87363 /* CoreGraphics.framework */; };
@@ -23,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		535CF76E16B8B66800EC6F84 /* PersonLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonLocation.h; sourceTree = "<group>"; };
+		535CF76F16B8B66800EC6F84 /* PersonLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PersonLocation.m; sourceTree = "<group>"; };
 		9FD80DC116B7642B00B87363 /* GPSTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GPSTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FD80DC516B7642B00B87363 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9FD80DC716B7642B00B87363 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -92,6 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				9FD80DDD16B7642B00B87363 /* MainStoryboard.storyboard */,
+				535CF76E16B8B66800EC6F84 /* PersonLocation.h */,
+				535CF76F16B8B66800EC6F84 /* PersonLocation.m */,
 				9FD80DE016B7642B00B87363 /* GPSViewController.h */,
 				9FD80DE116B7642B00B87363 /* GPSViewController.m */,
 				9FD80DCC16B7642B00B87363 /* Supporting Files */,
@@ -185,6 +190,7 @@
 				9FD80DD216B7642B00B87363 /* main.m in Sources */,
 				9FD80DD616B7642B00B87363 /* GPSAppDelegate.m in Sources */,
 				9FD80DE216B7642B00B87363 /* GPSViewController.m in Sources */,
+				535CF77016B8B66800EC6F84 /* PersonLocation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,6 +307,7 @@
 				9FD80DE716B7642B00B87363 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
