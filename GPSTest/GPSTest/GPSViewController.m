@@ -15,7 +15,9 @@
 @interface GPSViewController ()
 
 @property (retain, nonatomic) IBOutlet MKMapView* myMapView;
-//@property (strong, nonatomic) NSMutableArray* points;
+@property (retain, nonatomic) PersonLocation *myLocation;
+@property (retain, nonatomic) NSMutableArray* points;
+@property (nonatomic) int i;
 
 @end
 
@@ -23,8 +25,10 @@
 
 @synthesize myMapView = _myMapView;
 @synthesize delegate = _delegate;
-//@synthesize points = _points;
+@synthesize myLocation = _myLocation;
+@synthesize points = _points;
 @synthesize locationManager;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     
@@ -33,103 +37,61 @@
     return self;
 }
 
-/* comment addition here: Jan 30, 1:25 AM */
+-(void)updateMapViewAt:(CLLocationCoordinate2D)coord {
+    
+    [self.myMapView setCenterCoordinate:coord animated:TRUE];
+    
+    
+}
+
+-(PersonLocation *)myLocation{
+    if(!_myLocation){
+        _myLocation = [[PersonLocation alloc]init];
+        [_myLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
+        [_myLocation setTitle: @"ME"];
+        [self addPoints];
+    }
+    else{
+        [_myLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
+    }
+    return _myLocation;
+}
+
+/* comment addition here: Jan 30, 4:00 AM */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
-    int i = 0;
-    for(CLLocation* loc in locations){
-        
-            CLLocationCoordinate2D newCoord = {.latitude = loc.coordinate.latitude, .longitude = loc.coordinate.longitude};
-            
-            MKCoordinateRegion region;
-            region.center = newCoord;
-            
-            MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
-            region.span = span;
-            
-            PersonLocation *point = [[PersonLocation alloc]init];
-            [point setCoordinate:newCoord];
-         
-            //userLocation is always in locations array
-            if(loc == self.myMapView.userLocation.location){
-                [point setTitle:[NSString stringWithFormat:@"User Location"]];
-                [self.myMapView setRegion:region];
-            }
-        
-            [point setTitle:[NSString stringWithFormat:@"Person #%d", i]];
-            [self.myMapView addAnnotation:point];
-        
-      
-    }
-    
+  
+    //[self updateMapViewAt:[self.myLocation getCoordinate]];
+    //[self.myMapView setRegion:region animated:TRUE ];
+    [self.myMapView addAnnotation:self.myLocation];
 }
 
-/*
-- (void)locationManager: (CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation{
-    
-    if((oldLocation.coordinate.longitude != newLocation.coordinate.longitude) || (oldLocation.coordinate.latitude != newLocation.coordinate.latitude)){
-        
-        CLLocationCoordinate2D coord = {.latitude = newLocation.coordinate.latitude, .longitude = newLocation.coordinate.longitude};
-        
-        MKCoordinateRegion region;
-        region.center = coord;
-        
-        MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
-        region.span = span;
-        
-        [self.myMapView setRegion:region];
-        PersonLocation *point = [[PersonLocation alloc]init];
-        [point setCoordinate:coord];
-        [point setTitle: [NSString stringWithFormat:@"test%d", 1]];
-        [self.myMapView addAnnotation:point];
-   
-    }
-    
-}
- */
 
-/*
-- (MKAnnotationView*)mapView: (MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation{
-    static NSString *identifier = @"Person";
-    
-    if([annotation isKindOfClass:[PersonLocation class]]) {
-        MKPinAnnotationView *annotationView = (MKPinAnnotationView *) [mapView dequeueReusableAnnotationViewWithIdentifier: identifier];
-        if(annotationView == nil) {
-            annotationView = [[MKPinAnnotationView alloc]init];
-        }
-        else{
-            annotationView.annotation = annotation;
-        }
-        annotationView.enabled = YES;
-        annotationView.canShowCallout = YES;
-        
-        return annotationView;
-    }
-   
-    return nil;
-}*/
-
-/*
 -(NSMutableArray*) points{
     if(!_points) _points = [[NSMutableArray alloc] init];
     return _points;
-}*/
+}
 
 
-//-(void) addPoints /*:(NSMutableArray *)points*/{
-/*    for (int i = 0; i < 5; i++){
+/* may want to add specific person locations in the future instead of arbitrary */
+-(void) addPoints {//:(NSMutableArray *)points{
+   for (int i = 0; i < 5; i++){
         PersonLocation* point = [[PersonLocation alloc] init];
         
-        CLLocationCoordinate2D coordinate = {.longitude = self.mapView.userLocation.location.coordinate.longitude + 5*(i + 1), .latitude = self.mapView.userLocation.location.coordinate.latitude + 5*(i + 1)};
+        CLLocationCoordinate2D coordinate = {.longitude = [self.myLocation getCoordinate].longitude + .5*(i + 1), .latitude = [self.myLocation getCoordinate].latitude + .5*(i + 1)};
         [point setCoordinate: coordinate];
         [point setTitle:[NSString stringWithFormat: @"test%d", i]];
         
-        MKAnnotationView* pointDisplay = [[MKAnnotationView alloc] initWithAnnotation:point reuseIdentifier:[point getTitle]];
-        
-        
-        [points addObject:pointDisplay];
-    }        
-    [self.mapView addAnnotations: points];
-}*/
+        [self.points addObject:point];
+        [self.myMapView addAnnotation:point];
+    }
+}
+
+//tester method
+-(void) clearPoints {
+    [self.myMapView removeAnnotations:self.points];
+    [self.points removeAllObjects];
+}
+ 
 
 - (IBAction)StdButton:(UIBarButtonItem *)sender {
     self.myMapView.mapType = MKMapTypeStandard;
@@ -144,18 +106,21 @@
 }
 
 
--(void)updateMapViewAt:(CLLocationCoordinate2D)coord {
-    
-    [self.myMapView setCenterCoordinate:coord animated:TRUE];
-    
-    
-}
+
 - (IBAction)refreshButton:(UIBarButtonItem *)sender {
     
-     MKUserLocation *usrLoc = self.myMapView.userLocation;
+     /*MKUserLocation *usrLoc = self.myMapView.userLocation;
      CLLocation *location = usrLoc.location;
-     CLLocationCoordinate2D coords = location.coordinate;
-     [self updateMapViewAt: coords]; 
+     CLLocationCoordinate2D coords = location.coordinate;*/
+     MKCoordinateRegion region;
+     region.center = [self.myLocation getCoordinate];
+     MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
+     region.span = span;
+    
+     [self clearPoints]; // for testing
+     [self addPoints]; // for testing 
+     //[self.myMapView setRegion:region animated:TRUE ];
+     [self updateMapViewAt: [self.myLocation getCoordinate]];
 }
 
 -(void)setMapView:(MKMapView *)myMapView{
