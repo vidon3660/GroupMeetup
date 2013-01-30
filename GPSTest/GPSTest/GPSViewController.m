@@ -96,7 +96,7 @@
     
      MKCoordinateRegion region;
      region.center = [self.myLocation getCoordinate];
-     MKCoordinateSpan span = {.latitudeDelta = 0.5, .longitudeDelta = 0.5};
+     MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
      region.span = span;
      [self updateMapViewAt: [self.myLocation getCoordinate] AndRegion:region];
      
@@ -108,12 +108,22 @@
  * the the user location is changed. these are added to the myFriends array (of PersonLocation
  * type), and are also added to the annotations of myMapView. */
 -(void) addFriends {//:(NSMutableArray *)friends{
+    unsigned index_x = 0;
+    unsigned index_y = 0;
+    int sign_x = 0;
+    int sign_y = 0;
     for (int i = 0; i < 5; i++){
         PersonLocation* friend = [[PersonLocation alloc] init];
-        
-        CLLocationCoordinate2D coordinate = {.longitude = [self.myLocation getCoordinate].longitude + .075*(i + 1), .latitude = [self.myLocation getCoordinate].latitude + .075*(i + 1)};
+        index_x = arc4random() % 5;
+        index_y = arc4random() % 5;
+        sign_x = arc4random() % 2;
+        sign_y = arc4random() % 2;
+        if(sign_x == 0) sign_x = -1;
+        if(sign_y == 0) sign_y = -1; 
+        CLLocationCoordinate2D coordinate = {.longitude = [self.myLocation getCoordinate].longitude + .005*index_x*sign_x,
+            .latitude = [self.myLocation getCoordinate].latitude + .005*index_y*sign_y};
         [friend setCoordinate: coordinate];
-        [friend setTitle:[NSString stringWithFormat: @"test%d", i]];
+        [friend setTitle:[NSString stringWithFormat: @"Friend #%d", i+1]];
         
         [self.myFriends addObject:friend];
         [self.myMapView addAnnotation:friend];
