@@ -1,6 +1,6 @@
 //
 //  GPSAppDelegate.m
-//  GPS_iPhone_App
+//  GPSTest
 //
 //  Created by Kiran Vodrahalli on 1/28/13.
 //  Copyright (c) 2013 KVFunAppsHackWeek. All rights reserved.

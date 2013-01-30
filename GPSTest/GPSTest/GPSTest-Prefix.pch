@@ -1,5 +1,5 @@
 //
-// Prefix header for all source files of the 'GPS_iPhone_App' target in the 'GPS_iPhone_App' project
+// Prefix header for all source files of the 'GPSTest' target in the 'GPSTest' project
 //
 
 #import <Availability.h>
