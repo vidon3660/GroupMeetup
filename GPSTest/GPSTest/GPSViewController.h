@@ -20,10 +20,10 @@
 }
 @property (retain, nonatomic) CLLocationManager *locationManager; 
 @property (nonatomic, weak) id <GPSViewControllerDelegate> delegate;
--(NSMutableArray*) points;
--(void) addPoints:(NSMutableArray *)points;
+//-(NSMutableArray*) points;
+//-(void) addPoints:(NSMutableArray *)points;
 -(void)updateMapViewAt:(CLLocationCoordinate2D)coord;
--(void)setMapView:(MKMapView *)mapView;
+-(void)setMapView:(MKMapView *)newMapView;
 -(void)viewDidLoad;
 
 @end

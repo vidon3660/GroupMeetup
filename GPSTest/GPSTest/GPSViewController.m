@@ -14,16 +14,16 @@
 
 @interface GPSViewController ()
 
-@property (retain, nonatomic) IBOutlet MKMapView* mapView;
-@property (strong, nonatomic) NSMutableArray* points;
+@property (retain, nonatomic) IBOutlet MKMapView* myMapView;
+//@property (strong, nonatomic) NSMutableArray* points;
 
 @end
 
 @implementation GPSViewController
 
-@synthesize mapView = _mapView;
+@synthesize myMapView = _myMapView;
 @synthesize delegate = _delegate;
-@synthesize points = _points;
+//@synthesize points = _points;
 @synthesize locationManager;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
@@ -33,34 +33,89 @@
     return self;
 }
 
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
+    int i = 0;
+    for(CLLocation* loc in locations){
+        
+            CLLocationCoordinate2D newCoord = {.latitude = loc.coordinate.latitude, .longitude = loc.coordinate.longitude};
+            
+            MKCoordinateRegion region;
+            region.center = newCoord;
+            
+            MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
+            region.span = span;
+            
+            PersonLocation *point = [[PersonLocation alloc]init];
+            [point setCoordinate:newCoord];
+         
+            //userLocation is always in locations array
+            if(loc == self.myMapView.userLocation.location){
+                [point setTitle:[NSString stringWithFormat:@"User Location"]];
+                [self.myMapView setRegion:region];
+            }
+        
+            [point setTitle:[NSString stringWithFormat:@"Person #%d", i]];
+            [self.myMapView addAnnotation:point];
+        
+      
+    }
+    
+}
+
+/*
 - (void)locationManager: (CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation{
     
     if((oldLocation.coordinate.longitude != newLocation.coordinate.longitude) || (oldLocation.coordinate.latitude != newLocation.coordinate.latitude)){
         
         CLLocationCoordinate2D coord = {.latitude = newLocation.coordinate.latitude, .longitude = newLocation.coordinate.longitude};
+        
         MKCoordinateRegion region;
         region.center = coord;
         
         MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
         region.span = span;
-        [self.mapView setRegion:region];
+        
+        [self.myMapView setRegion:region];
         PersonLocation *point = [[PersonLocation alloc]init];
         [point setCoordinate:coord];
-        [point setTitle: @"This is new, but wrong"];
-        [self.mapView addAnnotation:point];
+        [point setTitle: [NSString stringWithFormat:@"test%d", 1]];
+        [self.myMapView addAnnotation:point];
    
     }
     
 }
+ */
 
+/*
+- (MKAnnotationView*)mapView: (MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation{
+    static NSString *identifier = @"Person";
+    
+    if([annotation isKindOfClass:[PersonLocation class]]) {
+        MKPinAnnotationView *annotationView = (MKPinAnnotationView *) [mapView dequeueReusableAnnotationViewWithIdentifier: identifier];
+        if(annotationView == nil) {
+            annotationView = [[MKPinAnnotationView alloc]init];
+        }
+        else{
+            annotationView.annotation = annotation;
+        }
+        annotationView.enabled = YES;
+        annotationView.canShowCallout = YES;
+        
+        return annotationView;
+    }
+   
+    return nil;
+}*/
 
+/*
 -(NSMutableArray*) points{
     if(!_points) _points = [[NSMutableArray alloc] init];
     return _points;
-}
+}*/
 
--(void) addPoints:(NSMutableArray *)points{
-    for (int i = 0; i < 5; i++){
+
+//-(void) addPoints /*:(NSMutableArray *)points*/{
+/*    for (int i = 0; i < 5; i++){
         PersonLocation* point = [[PersonLocation alloc] init];
         
         CLLocationCoordinate2D coordinate = {.longitude = self.mapView.userLocation.location.coordinate.longitude + 5*(i + 1), .latitude = self.mapView.userLocation.location.coordinate.latitude + 5*(i + 1)};
@@ -73,36 +128,37 @@
         [points addObject:pointDisplay];
     }        
     [self.mapView addAnnotations: points];
-}
+}*/
 
 - (IBAction)StdButton:(UIBarButtonItem *)sender {
-    self.mapView.mapType = MKMapTypeStandard;
+    self.myMapView.mapType = MKMapTypeStandard;
 }
+
 - (IBAction)SatButton:(UIBarButtonItem *)sender {
-    self.mapView.mapType = MKMapTypeSatellite;
+    self.myMapView.mapType = MKMapTypeSatellite;
 }
 
 - (IBAction)HybdButton:(UIBarButtonItem *)sender {
-    self.mapView.mapType = MKMapTypeHybrid;
+    self.myMapView.mapType = MKMapTypeHybrid;
 }
 
 
 -(void)updateMapViewAt:(CLLocationCoordinate2D)coord {
     
-    [self.mapView setCenterCoordinate:coord animated:TRUE];
+    [self.myMapView setCenterCoordinate:coord animated:TRUE];
     
     
 }
 - (IBAction)refreshButton:(UIBarButtonItem *)sender {
     
-     MKUserLocation *usrLoc = self.mapView.userLocation;
+     MKUserLocation *usrLoc = self.myMapView.userLocation;
      CLLocation *location = usrLoc.location;
      CLLocationCoordinate2D coords = location.coordinate;
      [self updateMapViewAt: coords]; 
 }
 
--(void)setMapView:(MKMapView *)mapView{
-    _mapView = mapView;
+-(void)setMapView:(MKMapView *)myMapView{
+    _myMapView = myMapView;
 }
 
 -(void)viewDidLoad{
@@ -112,9 +168,12 @@
     [locationManager setDelegate:self];
     [locationManager setDistanceFilter:kCLDistanceFilterNone];
     [locationManager setDesiredAccuracy:kCLLocationAccuracyBestForNavigation];
-    [locationManager startUpdatingLocation];
-    self.mapView.showsUserLocation = YES;
-    self.mapView.delegate = self;
+    if([CLLocationManager locationServicesEnabled]){
+         [locationManager startUpdatingLocation];
+         self.myMapView.showsUserLocation = YES;
+    }
+   
+    self.myMapView.delegate = self;
 }
 
 
