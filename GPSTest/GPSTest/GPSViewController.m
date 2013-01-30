@@ -16,7 +16,7 @@
 
 @property (retain, nonatomic) IBOutlet MKMapView* myMapView;
 @property (retain, nonatomic) PersonLocation *myLocation;
-@property (retain, nonatomic) NSMutableArray* points;
+@property (retain, nonatomic) NSMutableArray* myFriends;
 @property (nonatomic) int i;
 
 @end
@@ -26,7 +26,7 @@
 @synthesize myMapView = _myMapView;
 @synthesize delegate = _delegate;
 @synthesize myLocation = _myLocation;
-@synthesize points = _points;
+@synthesize myFriends = _myFriends;
 @synthesize locationManager;
 
 
@@ -49,7 +49,7 @@
         _myLocation = [[PersonLocation alloc]init];
         [_myLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
         [_myLocation setTitle: @"ME"];
-        [self addPoints];
+        [self addFriends];
     }
     else{
         [_myLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
@@ -59,37 +59,35 @@
 
 /* comment addition here: Jan 30, 4:00 AM */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
-  
-    //[self updateMapViewAt:[self.myLocation getCoordinate]];
-    //[self.myMapView setRegion:region animated:TRUE ];
+
     [self.myMapView addAnnotation:self.myLocation];
 }
 
 
--(NSMutableArray*) points{
-    if(!_points) _points = [[NSMutableArray alloc] init];
-    return _points;
+-(NSMutableArray*) myFriends{
+    if(!_myFriends) _myFriends = [[NSMutableArray alloc] init];
+    return _myFriends;
 }
 
 
 /* may want to add specific person locations in the future instead of arbitrary */
--(void) addPoints {//:(NSMutableArray *)points{
+-(void) addFriends {//:(NSMutableArray *)points{
    for (int i = 0; i < 5; i++){
-        PersonLocation* point = [[PersonLocation alloc] init];
+        PersonLocation* friend = [[PersonLocation alloc] init];
         
         CLLocationCoordinate2D coordinate = {.longitude = [self.myLocation getCoordinate].longitude + .5*(i + 1), .latitude = [self.myLocation getCoordinate].latitude + .5*(i + 1)};
-        [point setCoordinate: coordinate];
-        [point setTitle:[NSString stringWithFormat: @"test%d", i]];
+        [friend setCoordinate: coordinate];
+        [friend setTitle:[NSString stringWithFormat: @"test%d", i]];
         
-        [self.points addObject:point];
-        [self.myMapView addAnnotation:point];
+        [self.myFriends addObject:friend];
+        [self.myMapView addAnnotation:friend];
     }
 }
 
 //tester method
--(void) clearPoints {
-    [self.myMapView removeAnnotations:self.points];
-    [self.points removeAllObjects];
+-(void) clearFriends {
+    [self.myMapView removeAnnotations:self.myFriends];
+    [self.myFriends removeAllObjects];
 }
  
 
@@ -109,18 +107,15 @@
 
 - (IBAction)refreshButton:(UIBarButtonItem *)sender {
     
-     /*MKUserLocation *usrLoc = self.myMapView.userLocation;
-     CLLocation *location = usrLoc.location;
-     CLLocationCoordinate2D coords = location.coordinate;*/
      MKCoordinateRegion region;
      region.center = [self.myLocation getCoordinate];
      MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
      region.span = span;
     
-     [self clearPoints]; // for testing
-     [self addPoints]; // for testing 
-     //[self.myMapView setRegion:region animated:TRUE ];
+     [self clearFriends]; // for testing
+     [self addFriends]; // for testing
      [self updateMapViewAt: [self.myLocation getCoordinate]];
+     [self.myMapView setRegion:region animated:TRUE ];
 }
 
 -(void)setMapView:(MKMapView *)myMapView{

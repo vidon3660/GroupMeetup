@@ -21,17 +21,17 @@
                                             <action selector="refreshButton:" destination="2" id="T0f-Au-AzS"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem title="Std" width="67" id="zDa-Xs-9sk">
+                                    <barButtonItem title="Standard" width="67" id="zDa-Xs-9sk">
                                         <connections>
                                             <action selector="StdButton:" destination="2" id="bxG-ZV-I7f"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem title="Sat" width="67" id="rFB-QV-tB1">
+                                    <barButtonItem title="Satellite" width="67" id="rFB-QV-tB1">
                                         <connections>
                                             <action selector="SatButton:" destination="2" id="4in-xw-5SU"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem title="Hybd" width="67" id="uHy-Fl-dpE">
+                                    <barButtonItem title="Hybrid" width="67" id="uHy-Fl-dpE">
                                         <connections>
                                             <action selector="HybdButton:" destination="2" id="f11-oR-8el"/>
                                         </connections>
