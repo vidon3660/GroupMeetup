@@ -17,7 +17,6 @@
 @property (retain, nonatomic) IBOutlet MKMapView* myMapView;
 @property (retain, nonatomic) PersonLocation *myLocation;
 @property (retain, nonatomic) NSMutableArray* myFriends;
-@property (nonatomic) int i;
 
 @end
 
@@ -30,6 +29,7 @@
 @synthesize locationManager;
 
 
+// for <CLLocationManagerDelegate>
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -37,19 +37,17 @@
     return self;
 }
 
--(void)updateMapViewAt:(CLLocationCoordinate2D)coord {
-    
-    [self.myMapView setCenterCoordinate:coord animated:TRUE];
-    
-    
+//crucial method, sets map view to var newMapView
+-(void)setMapView:(MKMapView *)newMapView{
+    _myMapView = newMapView;
 }
 
+//init myLocation, and always keeps it updated 
 -(PersonLocation *)myLocation{
     if(!_myLocation){
         _myLocation = [[PersonLocation alloc]init];
         [_myLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
         [_myLocation setTitle: @"ME"];
-        [self addFriends];
     }
     else{
         [_myLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
@@ -57,25 +55,63 @@
     return _myLocation;
 }
 
-/* comment addition here: Jan 30, 4:00 AM */
+//init myFriends
+-(NSMutableArray*) myFriends{
+    if(!_myFriends){
+        _myFriends = [[NSMutableArray alloc] init];
+    }
+    return _myFriends;
+}
+
+
+
+
+/* locationManager updates and is necessary for <CLLocationManagerDelegate>*/
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
 
     [self.myMapView addAnnotation:self.myLocation];
 }
 
 
--(NSMutableArray*) myFriends{
-    if(!_myFriends) _myFriends = [[NSMutableArray alloc] init];
-    return _myFriends;
+
+// Buttons
+
+// changes map type to standard 
+- (IBAction)StdButton:(UIBarButtonItem *)sender {
+    self.myMapView.mapType = MKMapTypeStandard;
 }
 
+// changes map type to satellite 
+- (IBAction)SatButton:(UIBarButtonItem *)sender {
+    self.myMapView.mapType = MKMapTypeSatellite;
+}
+
+// changes map type to hybrid (combo of standard and satellite) 
+- (IBAction)HybdButton:(UIBarButtonItem *)sender {
+    self.myMapView.mapType = MKMapTypeHybrid;
+}
+
+// refreshes the map -- creates a region based on myLocation, and calls updateMapView
+- (IBAction)refreshButton:(UIBarButtonItem *)sender {
+    
+     MKCoordinateRegion region;
+     region.center = [self.myLocation getCoordinate];
+     MKCoordinateSpan span = {.latitudeDelta = 0.5, .longitudeDelta = 0.5};
+     region.span = span;
+     [self updateMapViewAt: [self.myLocation getCoordinate] AndRegion:region];
+     
+}
 
 /* may want to add specific person locations in the future instead of arbitrary */
--(void) addFriends {//:(NSMutableArray *)points{
-   for (int i = 0; i < 5; i++){
+
+/* adds (currently) arbitrary locations for other friends, which are only changed whenever
+ * the the user location is changed. these are added to the myFriends array (of PersonLocation
+ * type), and are also added to the annotations of myMapView. */
+-(void) addFriends {//:(NSMutableArray *)friends{
+    for (int i = 0; i < 5; i++){
         PersonLocation* friend = [[PersonLocation alloc] init];
         
-        CLLocationCoordinate2D coordinate = {.longitude = [self.myLocation getCoordinate].longitude + .5*(i + 1), .latitude = [self.myLocation getCoordinate].latitude + .5*(i + 1)};
+        CLLocationCoordinate2D coordinate = {.longitude = [self.myLocation getCoordinate].longitude + .075*(i + 1), .latitude = [self.myLocation getCoordinate].latitude + .075*(i + 1)};
         [friend setCoordinate: coordinate];
         [friend setTitle:[NSString stringWithFormat: @"test%d", i]];
         
@@ -84,44 +120,31 @@
     }
 }
 
-//tester method
+//removes the friend markers from myMapView's annotations, as well as clears the myFriends array
 -(void) clearFriends {
     [self.myMapView removeAnnotations:self.myFriends];
     [self.myFriends removeAllObjects];
 }
- 
 
-- (IBAction)StdButton:(UIBarButtonItem *)sender {
-    self.myMapView.mapType = MKMapTypeStandard;
+/* clears friends, then adds friends (addFriends will instead take in array of friends from
+ * from the database (these will be represented as PersonLocations). This method then removes
+ * the old locations of the friends, and updates with the new ones. */ 
+-(void)updateFriends{
+    [self clearFriends];
+    [self addFriends];
 }
 
-- (IBAction)SatButton:(UIBarButtonItem *)sender {
-    self.myMapView.mapType = MKMapTypeSatellite;
-}
-
-- (IBAction)HybdButton:(UIBarButtonItem *)sender {
-    self.myMapView.mapType = MKMapTypeHybrid;
-}
-
-
-
-- (IBAction)refreshButton:(UIBarButtonItem *)sender {
+/* updates the map view: shifts to the coordinate (non-scaling) and region (scaling) provided.
+ * also updates myFriends. */
+-(void)updateMapViewAt:(CLLocationCoordinate2D)coord AndRegion: (MKCoordinateRegion)region {
     
-     MKCoordinateRegion region;
-     region.center = [self.myLocation getCoordinate];
-     MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
-     region.span = span;
+    [self.myMapView setCenterCoordinate:coord animated:TRUE];
+    [self.myMapView setRegion:region animated:TRUE ];
+    [self updateFriends];
     
-     [self clearFriends]; // for testing
-     [self addFriends]; // for testing
-     [self updateMapViewAt: [self.myLocation getCoordinate]];
-     [self.myMapView setRegion:region animated:TRUE ];
 }
 
--(void)setMapView:(MKMapView *)myMapView{
-    _myMapView = myMapView;
-}
-
+// did the view load; also initializes locationManager and sets some BOOLs
 -(void)viewDidLoad{
     [super viewDidLoad];
     

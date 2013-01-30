@@ -20,10 +20,20 @@
 }
 @property (retain, nonatomic) CLLocationManager *locationManager; 
 @property (nonatomic, weak) id <GPSViewControllerDelegate> delegate;
-//-(NSMutableArray*) points;
-//-(void) addPoints:(NSMutableArray *)points;
--(void)updateMapViewAt:(CLLocationCoordinate2D)coord;
+
+//for now no argument
+-(void) addFriends;//:(NSMutableArray *)points;
+
+-(void) clearFriends;
+
+-(void) updateFriends;
+
 -(void)setMapView:(MKMapView *)newMapView;
+
+-(void)updateMapViewAt:(CLLocationCoordinate2D)coord AndRegion: (MKCoordinateRegion)region;
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
+
 -(void)viewDidLoad;
 
 @end
