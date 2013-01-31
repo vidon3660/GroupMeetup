@@ -55,6 +55,18 @@
     return _myLocation;
 }
 
+/*
+//init centerLocation, and always keeps it updated
+-(PersonLocation *)centerLocation{
+    
+    if(!_centerLocation){
+        _centerLocation = [[PersonLocation alloc]init];
+        [_centerLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
+        [_centerLocation setTitle: @"center"];
+    }
+    return _centerLocation;
+}*/
+
 //init myFriends
 -(NSMutableArray*) myFriends{
     if(!_myFriends){
@@ -70,6 +82,7 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
 
     [self.myMapView addAnnotation:self.myLocation];
+    //[self.myMapView addAnnotation:self.centerLocation];
 }
 
 
@@ -102,6 +115,46 @@
      
 }
 
+// returns the center of mass of an array of PersonLocation;
+- (CLLocationCoordinate2D) findCenterCoordinate{
+    double xcm = 0;
+    double ycm = 0;
+    double xCurrent;
+    double yCurrent;
+    int numOfFriends = self.myFriends.count;
+    
+    for (int i = 0; i < numOfFriends; i++)
+    {
+        if ([[self.myFriends objectAtIndex:i] isKindOfClass:[PersonLocation class]])
+        {
+            PersonLocation* person = [self.myFriends objectAtIndex:i];
+            CLLocationCoordinate2D coord = person.getCoordinate;
+            xCurrent = coord.latitude;
+            yCurrent = coord.longitude;
+            xcm = xcm + xCurrent;
+            ycm = ycm + yCurrent;
+        }
+    }
+    
+    double xOfMe = [self.myLocation getCoordinate].latitude;
+    double yOfMe = [self.myLocation getCoordinate].longitude;
+    xcm = xcm + xOfMe;
+    ycm = ycm + yOfMe;
+    
+    xcm = (xcm)/(1.0*numOfFriends + 1);
+    ycm = ycm/(1.0*numOfFriends + 1);
+    
+    CLLocationCoordinate2D centerCoord = {.latitude = xcm, .longitude = ycm};
+    return centerCoord;
+}
+// returns the PersonLocation associated with the center of mass
+- (PersonLocation*) findCenter: (CLLocationCoordinate2D) centerCoord{
+    PersonLocation* center = [[PersonLocation alloc] init];
+    [center setCoordinate:centerCoord];
+    [center setTitle:@"center"];
+    return center;
+}
+
 /* may want to add specific person locations in the future instead of arbitrary */
 
 /* adds (currently) arbitrary locations for other friends, which are only changed whenever
@@ -128,6 +181,12 @@
         [self.myFriends addObject:friend];
         [self.myMapView addAnnotation:friend];
     }
+    CLLocationCoordinate2D centerCoord = [self findCenterCoordinate];
+    PersonLocation* center = [[PersonLocation alloc]init];
+    [center setCoordinate:centerCoord];
+    [center setTitle:@"center"];
+    [self.myFriends addObject:center];
+    [self.myMapView addAnnotation:center];
 }
 
 //removes the friend markers from myMapView's annotations, as well as clears the myFriends array

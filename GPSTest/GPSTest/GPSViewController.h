@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MapKit/MapKit.h"
 #import <CoreLocation/CoreLocation.h>
+#import "PersonLocation.h"
 
 @class GPSViewController;
 
@@ -35,5 +36,9 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
 -(void)viewDidLoad;
+
+- (CLLocationCoordinate2D) findCenterCoordinate;
+
+- (PersonLocation*) findCenter: (CLLocationCoordinate2D) centerCoord;
 
 @end
