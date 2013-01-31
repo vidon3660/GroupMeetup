@@ -31,14 +31,12 @@
 
 -(void)setMapView:(MKMapView *)newMapView;
 
--(void)updateMapViewAt:(CLLocationCoordinate2D)coord AndRegion: (MKCoordinateRegion)region;
+-(void)updateMapView;//At:(CLLocationCoordinate2D)coord AndRegion: (MKCoordinateRegion)region;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
 -(void)viewDidLoad;
 
 - (CLLocationCoordinate2D) findCenterCoordinate;
-
-- (PersonLocation*) findCenter: (CLLocationCoordinate2D) centerCoord;
 
 @end

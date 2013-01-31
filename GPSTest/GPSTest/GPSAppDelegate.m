@@ -7,12 +7,15 @@
 //
 
 #import "GPSAppDelegate.h"
+#import <Parse/Parse.h>
 
 @implementation GPSAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [Parse setApplicationId:@"MRA2FfPdI9DMKgv3eZ4viaIDUT1ogzet1MpmrzJY"
+                  clientKey:@"pN6MjjAh3BEjUc3e6JqCxajnFazAKXzS5Uri6eSE"];
     return YES;
 }
 							

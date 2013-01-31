@@ -7,6 +7,7 @@
 //
 
 #import "GPSViewController.h"
+#import "Parse/Parse.h"
 #import "MapKit/MapKit.h"
 #import <CoreLocation/CoreLocation.h>
 #import "PersonLocation.h"
@@ -55,18 +56,6 @@
     return _myLocation;
 }
 
-/*
-//init centerLocation, and always keeps it updated
--(PersonLocation *)centerLocation{
-    
-    if(!_centerLocation){
-        _centerLocation = [[PersonLocation alloc]init];
-        [_centerLocation setCoordinate:self.myMapView.userLocation.location.coordinate];
-        [_centerLocation setTitle: @"center"];
-    }
-    return _centerLocation;
-}*/
-
 //init myFriends
 -(NSMutableArray*) myFriends{
     if(!_myFriends){
@@ -107,12 +96,54 @@
 // refreshes the map -- creates a region based on myLocation, and calls updateMapView
 - (IBAction)refreshButton:(UIBarButtonItem *)sender {
     
-     MKCoordinateRegion region;
-     region.center = [self.myLocation getCoordinate];
-     MKCoordinateSpan span = {.latitudeDelta = 0.2, .longitudeDelta = 0.2};
-     region.span = span;
-     [self updateMapViewAt: [self.myLocation getCoordinate] AndRegion:region];
      
+    [self updateMapView]; //]: [self.myLocation getCoordinate] AndRegion:region];
+   
+     
+}
+
+
+- (double) findLatSpan{
+    CLLocationCoordinate2D center = [self findCenterCoordinate];
+    double maxLat = 0;
+    double minLat = 0;
+    for(int i = 0; i< self.myFriends.count; i++){
+        if([[self.myFriends objectAtIndex:i] getCoordinate].latitude >= maxLat){
+            maxLat = [[self.myFriends objectAtIndex:i] getCoordinate].latitude;
+        }
+        if([[self.myFriends objectAtIndex:i] getCoordinate].latitude <= minLat){
+            minLat = [[self.myFriends objectAtIndex:i] getCoordinate].latitude;
+        }
+    }
+    if(center.latitude >= maxLat){
+        maxLat = center.latitude;
+    }
+    if(center.latitude <= minLat){
+        minLat = center.latitude;
+    }
+    return maxLat - minLat;
+}
+
+- (double) findLongSpan{
+    CLLocationCoordinate2D center = [self findCenterCoordinate];
+    double maxLong = 0;
+    double minLong = 0;
+    for(int i = 0; i< self.myFriends.count; i++){
+        if([[self.myFriends objectAtIndex:i] getCoordinate].longitude >= maxLong){
+            maxLong = [[self.myFriends objectAtIndex:i] getCoordinate].longitude;
+        }
+        if([[self.myFriends objectAtIndex:i] getCoordinate].longitude <= minLong){
+            minLong = [[self.myFriends objectAtIndex:i] getCoordinate].longitude;
+        }
+    }
+    if(center.longitude >= maxLong){
+        maxLong = center.longitude;
+    }
+    if(center.longitude <= minLong){
+        minLong = center.longitude;
+    }
+    return maxLong - minLong;
+    
 }
 
 // returns the center of mass of an array of PersonLocation;
@@ -146,13 +177,6 @@
     
     CLLocationCoordinate2D centerCoord = {.latitude = xcm, .longitude = ycm};
     return centerCoord;
-}
-// returns the PersonLocation associated with the center of mass
-- (PersonLocation*) findCenter: (CLLocationCoordinate2D) centerCoord{
-    PersonLocation* center = [[PersonLocation alloc] init];
-    [center setCoordinate:centerCoord];
-    [center setTitle:@"center"];
-    return center;
 }
 
 /* may want to add specific person locations in the future instead of arbitrary */
@@ -205,11 +229,16 @@
 
 /* updates the map view: shifts to the coordinate (non-scaling) and region (scaling) provided.
  * also updates myFriends. */
--(void)updateMapViewAt:(CLLocationCoordinate2D)coord AndRegion: (MKCoordinateRegion)region {
+-(void)updateMapView{//At{//:(CLLocationCoordinate2D)coord {//AndRegion: (MKCoordinateRegion)region {
     
-    [self.myMapView setCenterCoordinate:coord animated:TRUE];
-    [self.myMapView setRegion:region animated:TRUE ];
     [self updateFriends];
+    MKCoordinateRegion region;
+    region.center = [self.myLocation getCoordinate];
+    MKCoordinateSpan span = {.latitudeDelta = .05, .longitudeDelta = .05};
+    region.span = span;
+    [self.myMapView setCenterCoordinate:[self.myLocation getCoordinate] animated:TRUE];
+    [self.myMapView setRegion:region animated:TRUE ];
+    
     
 }
 
@@ -227,6 +256,11 @@
     }
    
     self.myMapView.delegate = self;
+    
+    //Parse test 
+    PFObject *testObject = [PFObject objectWithClassName:@"TestObject"];
+    [testObject setObject:@"bar" forKey:@"foo"];
+    [testObject save];
 }
 
 
