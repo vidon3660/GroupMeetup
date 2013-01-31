@@ -102,7 +102,7 @@
      
 }
 
-
+/*
 - (double) findLatSpan{
     CLLocationCoordinate2D center = [self findCenterCoordinate];
     double maxLat = 0;
@@ -144,7 +144,7 @@
     }
     return maxLong - minLong;
     
-}
+}*/
 
 // returns the center of mass of an array of PersonLocation;
 - (CLLocationCoordinate2D) findCenterCoordinate{
@@ -257,10 +257,11 @@
    
     self.myMapView.delegate = self;
     
-    //Parse test 
+    //Parse test
+    /*
     PFObject *testObject = [PFObject objectWithClassName:@"TestObject"];
     [testObject setObject:@"bar" forKey:@"foo"];
-    [testObject save];
+    [testObject save];*/
 }
 
 
